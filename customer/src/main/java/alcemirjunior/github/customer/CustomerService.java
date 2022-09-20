@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 public record CustomerService(
         CustomerRepository customerRepository
 ) {
+
     public void registerCustomer(CustomerRegistrationRequest request) {
         Customer customer = Customer.builder()
                 .firstName(request.firstName())
@@ -14,6 +15,8 @@ public record CustomerService(
                 .build();
         //todo check if email valid
         //todo: check if email not taken
+        //todo: check if fraudster
         customerRepository.save(customer);
+        //todo: send notification
     }
 }
