@@ -2,6 +2,8 @@ package alcemirjunior.github.customer;
 
 import alcemirjunior.github.clients.fraud.FraudCheckResponse;
 import alcemirjunior.github.clients.fraud.FraudClient;
+import alcemirjunior.github.clients.notification.NotificationClient;
+import alcemirjunior.github.clients.notification.NotificationRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -9,7 +11,8 @@ import org.springframework.web.client.RestTemplate;
 public record CustomerService(
         CustomerRepository customerRepository,
         RestTemplate restTemplate,
-        FraudClient fraudClient
+        FraudClient fraudClient,
+        NotificationClient notificationClient
 ) {
 
     public void registerCustomer(CustomerRegistrationRequest request) {
@@ -26,6 +29,13 @@ public record CustomerService(
         if (fraudCheckResponse.isFraudster()) {
             throw new IllegalArgumentException("fraudster");
         }
-        //todo: send notification
+        //todo: tornar assincrono, adicionar uma fila
+        notificationClient.sendNotification(
+                new NotificationRequest(
+                        customer.getId(),
+                        customer.getEmail(),
+                        String.format("Hi %s, testing my message", customer.getFirstName())
+                )
+        );
     }
 }
